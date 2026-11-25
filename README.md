@@ -37,32 +37,37 @@ Dán một đoạn code, chơi được ngay trên điện thoại.
 ```html
 <!-- ===== RPGPAD - bắt đầu ===== -->
 <style>
-    #mc-root{position:fixed;left:0;right:0;top:0;bottom:0;z-index:99999;pointer-events:none;
+    #mc-root{--mc-s:2; /* 1 = cỡ cũ, 2 = to gấp đôi. Chỉnh số này để to/nhỏ tùy ý */
+        position:fixed;left:0;right:0;top:0;bottom:0;z-index:99999;pointer-events:none;
         -webkit-user-select:none;user-select:none;-webkit-touch-callout:none;touch-action:none;
         padding:env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);}
     #mc-root *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
 
     .mc-btn,.mc-small{pointer-events:auto;touch-action:none;opacity:.55;border-radius:0;
         background:rgba(255,255,255,.2);border:2px solid rgba(255,255,255,.6);color:#fff;
-        font:bold 20px/1 sans-serif;display:flex;align-items:center;justify-content:center;text-shadow:0 0 4px #000;}
+        font:bold calc(20px * var(--mc-s))/1 sans-serif;display:flex;align-items:center;justify-content:center;text-shadow:0 0 4px #000;}
     .mc-btn.on,.mc-small.on{opacity:1;background:rgba(255,255,255,.45);}
 
-    .mc-dpad{position:absolute;left:3vmin;bottom:3vmin;width:40vmin;height:40vmin;max-width:210px;max-height:210px;
+    .mc-dpad{position:absolute;left:3vmin;bottom:3vmin;width:calc(40vmin * var(--mc-s));height:calc(40vmin * var(--mc-s));
+        max-width:calc(210px * var(--mc-s));max-height:calc(210px * var(--mc-s));
         display:grid;grid-template-columns:repeat(3,1fr);grid-template-rows:repeat(3,1fr);pointer-events:none;}
     .mc-dpad .mc-btn{position:static;width:100%;height:100%;}
     .mc-dpad .mc-btn::before{content:"";width:0;height:0;border:solid transparent;}
-    #mc-up{grid-column:2;grid-row:1;}   #mc-up::before{border-width:0 9px 15px 9px;border-bottom-color:#fff;}
-    #mc-left{grid-column:1;grid-row:2;} #mc-left::before{border-width:9px 15px 9px 0;border-right-color:#fff;}
-    #mc-right{grid-column:3;grid-row:2;}#mc-right::before{border-width:9px 0 9px 15px;border-left-color:#fff;}
-    #mc-down{grid-column:2;grid-row:3;} #mc-down::before{border-width:15px 9px 0 9px;border-top-color:#fff;}
+    #mc-up{grid-column:2;grid-row:1;}   #mc-up::before{border-width:0 calc(9px * var(--mc-s)) calc(15px * var(--mc-s)) calc(9px * var(--mc-s));border-bottom-color:#fff;}
+    #mc-left{grid-column:1;grid-row:2;} #mc-left::before{border-width:calc(9px * var(--mc-s)) calc(15px * var(--mc-s)) calc(9px * var(--mc-s)) 0;border-right-color:#fff;}
+    #mc-right{grid-column:3;grid-row:2;}#mc-right::before{border-width:calc(9px * var(--mc-s)) 0 calc(9px * var(--mc-s)) calc(15px * var(--mc-s));border-left-color:#fff;}
+    #mc-down{grid-column:2;grid-row:3;} #mc-down::before{border-width:calc(15px * var(--mc-s)) calc(9px * var(--mc-s)) 0 calc(9px * var(--mc-s));border-top-color:#fff;}
 
-    #mc-a,#mc-b,#mc-dash{position:absolute;width:17vmin;height:17vmin;max-width:92px;max-height:92px;}
-    #mc-a{right:4vmin;bottom:15vmin;}
-    #mc-b{right:22vmin;bottom:5vmin;}
-    #mc-dash{right:4vmin;bottom:36vmin;width:13vmin;height:13vmin;max-width:70px;max-height:70px;font-size:13px;}
+    #mc-a,#mc-b,#mc-dash{position:absolute;width:calc(17vmin * var(--mc-s));height:calc(17vmin * var(--mc-s));
+        max-width:calc(92px * var(--mc-s));max-height:calc(92px * var(--mc-s));}
+    #mc-a{right:3vmin;bottom:calc(3vmin + 15.3vmin * var(--mc-s));}
+    #mc-b{right:calc(3vmin + 18.7vmin * var(--mc-s));bottom:3vmin;}
+    #mc-dash{right:calc(3vmin + 18.7vmin * var(--mc-s));bottom:calc(5vmin + 17vmin * var(--mc-s));
+        width:calc(13vmin * var(--mc-s));height:calc(13vmin * var(--mc-s));max-width:calc(70px * var(--mc-s));max-height:calc(70px * var(--mc-s));
+        font-size:calc(13px * var(--mc-s));}
 
-    .mc-small{position:absolute;top:2vmin;left:2vmin;min-width:44px;height:32px;padding:0 10px;
-        background:rgba(0,0,0,.45);font:bold 12px/30px sans-serif;opacity:.8;}
+    .mc-small{position:absolute;top:2vmin;left:2vmin;min-width:66px;height:46px;padding:0 14px;
+        background:rgba(0,0,0,.45);font:bold 16px/44px sans-serif;opacity:.8;}
     #mc-root.hidden .mc-dpad,#mc-root.hidden #mc-a,#mc-root.hidden #mc-b,#mc-root.hidden #mc-dash{display:none;}
 </style>
 
@@ -174,9 +179,9 @@ Lưu file, upload lại game, xóa cache rồi mở trên điện thoại. Xong.
 | Muốn đổi | Sửa trong code |
 |---|---|
 | Độ mờ nút | `opacity:.55` |
-| Kích thước nút A/B | `17vmin` và `max-width:92px` |
+| Kích thước tất cả nút | `--mc-s:2` (1 = cỡ nhỏ, 2 = gấp đôi, 1.5 = vừa) |
 | Bo góc | `border-radius:0` → `border-radius:6px` |
-| Vị trí | `left` / `right` / `bottom` của `.mc-dpad`, `#mc-a`, `#mc-b` |
+| Vị trí | `left` / `right` / `bottom` của `.mc-dpad`, `#mc-a`, `#mc-b`, `#mc-dash` |
 
 ---
 
